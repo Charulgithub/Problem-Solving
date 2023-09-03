@@ -1,7 +1,39 @@
 class Solution {
 public:
      
-    string longestPalindrome(string s) {
+  string longestPalindrome(string s) {
+    int n = s.size();
+    vector<vector<bool>> dp(n, vector<bool>(n));
+    int lenLPsubstr = 0;
+    int startIdx = 0;  // Store the starting index of the longest palindromic substring.
+
+    for (int gap = 0; gap < n; gap++) {
+        for (int start = 0; start + gap < n; start++) {
+            int end = start + gap;
+            if (gap == 0) {  // Length = 1 --> 1 char
+                dp[start][end] = true;
+            } else if (gap == 1) {  // Length = 2 --> 2 char
+                if (s[start] == s[end]) {
+                    dp[start][end] = true;
+                    startIdx = start;  // Update the starting index for length 2 palindrome.
+                }
+            } else {
+                if (s[start] == s[end] && dp[start + 1][end - 1]) {
+                    dp[start][end] = true;
+                    startIdx = start;  // Update the starting index for longer palindromes.
+                }
+            }
+            if (dp[start][end] && gap + 1 > lenLPsubstr) {
+                lenLPsubstr = gap + 1;
+            }
+        }
+    }
+    return s.substr(startIdx, lenLPsubstr);
+}
+
+
+  /*  
+  string longestPalindrome(string s) {
     int n = s.size();
     vector<vector<bool>> dp(n, vector<bool>(n, false));
     int lenLPsubstr = 0;
@@ -25,6 +57,7 @@ public:
     }
     return s.substr(startIdx, lenLPsubstr);
 }
+*/
 
 
     // string longestPalindrome(string s) {
