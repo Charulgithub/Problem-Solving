@@ -1,9 +1,9 @@
 class Solution {
-public:
-        #define P pair<int, int>
-   
+public: 
+     #define P pair<int, int>
+
     int secondMinimum(int n, vector<vector<int>>& edges, int time, int change) {
-        unordered_map<int, vector<int>> adj(n + 1);
+        vector<vector<int>> adj(n + 1);
         for (auto& edge : edges) {
             int u = edge[0];
             int v = edge[1];
@@ -13,14 +13,15 @@ public:
 
         vector<int> d1(n + 1, INT_MAX);
         vector<int> d2(n + 1, INT_MAX);
-        priority_queue<P, vector<P>, greater<P>> pq;
-        pq.push({0, 1});
+        queue<P> que;
+        que.push({1, 1}); //Visited node 1 once
         d1[1] = 0;
 
-        while (!pq.empty()) {
-            auto [timePassed, node] = pq.top();
-            pq.pop();
+        while (!que.empty()) {
+            auto [node, freq] = que.front();
+            que.pop();
 
+            int timePassed = (freq == 1) ? d1[node] : d2[node];
             if (d2[n] != INT_MAX && node == n) { //We reached n 2nd time means it's the second minimum
                 return d2[n];
             }
@@ -31,13 +32,12 @@ public:
             }
 
             for (auto& nbr : adj[node]) {
-                if (d1[nbr] > timePassed + time) { //+time for this edge to reach nbr
-                    d2[nbr] = d1[nbr];
+                if(d1[nbr] == INT_MAX) {
                     d1[nbr] = timePassed + time;
-                    pq.push({timePassed + time, nbr});
-                } else if (d2[nbr] > timePassed + time && d1[nbr] != timePassed + time) {
+                    que.push({nbr, 1});
+                } else if(d2[nbr] == INT_MAX && d1[nbr] != timePassed + time) {
                     d2[nbr] = timePassed + time;
-                    pq.push({timePassed + time, nbr});
+                    que.push({nbr, 2});
                 }
             }
         }
